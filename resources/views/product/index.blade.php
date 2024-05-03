@@ -54,7 +54,7 @@
               @foreach ($products as $product)
                 <tr>
                   <td class="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
-                    <img src="{{ $product->picture }}" alt="ini gambar product">
+                    <img src="{{ $product->getFirstMediaUrl('product-img') }}" alt="ini gambar product">
                   </td>
                   <td class="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
                     <h5 class="font-medium text-black dark:text-white">{{ $product->code }}</h5>
@@ -79,7 +79,7 @@
                       <a class="hover:text-primary" href="{{ route('products.show', $product->id) }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                           <path fill="currentColor"
-                            d="M3 21v-4.25L16.2 3.575q.3-.275.663-.425t.762-.15q.4 0 .775.15t.65.45L20.425 5q.3.275.438.65T21 6.4q0 .4-.137.763t-.438.662L7.25 21zM17.6 7.8L19 6.4L17.6 5l-1.4 1.4z" />
+                            d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5" />
                         </svg>
                       </a>
                       <a class="hover:text-primary" href="{{ route('products.edit', $product->id) }}">

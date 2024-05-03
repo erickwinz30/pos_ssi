@@ -1,5 +1,5 @@
 <aside :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
-  class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+  class="absolute left-0 top-0 z-9999 flex h-screen w-60 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
   @click.outside="sidebarToggle = false">
   <!-- SIDEBAR HEADER -->
   <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
@@ -94,9 +94,69 @@
               Product
             </a>
           </li>
-        </ul>
-      </div>
+          {{-- <li>
+            <a class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+              href="{{ route('pos.index') }}" @click="selected = (selected === 'Users' ? '':'Users')"
+              :class="{ 'bg-graydark dark:bg-meta-4': (selected === 'Users') && (page === 'users') }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M14 13q-1.25 0-2.125-.875T11 10q0-1.25.875-2.125T14 7q1.25 0 2.125.875T17 10q0 1.25-.875 2.125T14 13m-7 3q-.825 0-1.412-.587T5 14V6q0-.825.588-1.412T7 4h14q.825 0 1.413.588T23 6v8q0 .825-.587 1.413T21 16zm2-2h10q0-.825.588-1.412T21 12V8q-.825 0-1.412-.587T19 6H9q0 .825-.587 1.413T7 8v4q.825 0 1.413.588T9 14m11 6H3q-.825 0-1.412-.587T1 18V7h2v11h17zM7 14V6z" />
+              </svg>
 
+              Point Of Sales
+            </a>
+          </li>
+        </ul>
+      </div> --}}
+
+          <!-- Menu Cashier -->
+          <div>
+            <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">POINT OF SALES</h3>
+
+            <ul class="mb-6 flex flex-col gap-1.5">
+
+              <!-- Menu Item Users -->
+              <li>
+                <a class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                  href="{{ route('pos-session.index') }}"
+                  @click="selected = (selected === 'Point Of Sales' ? '':'Point Of Sales')"
+                  :class="{
+                      'bg-graydark dark:bg-meta-4': (selected === 'Point Of Sales') && (
+                          page === 'Point Of Sales')
+                  }">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 17 17">
+                    <path fill="currentColor" fill-rule="evenodd"
+                      d="M13.641 4.012h-1.656V2.957h1.352c.346 0 .625-.346.625-.771V.772c0-.427-.279-.771-.625-.771H9.646c-.346 0-.624.345-.624.771v1.414c0 .426.278.771.624.771h1.378v1.055H4.353c-.37 0-.67.3-.67.668l-1.67 8.631V16h13.998v-2.689L14.312 4.68a.67.67 0 0 0-.671-.668m-7.625 8.004H4.985v-1.047h1.031zm-1.032-2V8.969h1.031v1.047zm3.032 2.015H6.985v-1.062h1.031zm0-2.031H6.969V8.984h1.047zm2 2.029H8.969v-1.061h1.047zM8.969 10V8.969h1.047V10zm1.047-2H4.985V6h5.031zM13 8h-2.018V6.98H13z" />
+                  </svg>
+                  Point Of Sales
+                </a>
+              </li>
+              <!-- Menu Item Users -->
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">REPORTS</h3>
+
+            <ul class="mb-6 flex flex-col gap-1.5">
+
+              <!-- Menu Item Periode -->
+              <li>
+                <a class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                  href="{{ route('reports.periode.index') }}"
+                  @click="selected = (selected === 'Periode' ? '':'Periode')"
+                  :class="{ 'bg-graydark dark:bg-meta-4': (selected === 'Periode') && (page === 'Periode') }">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                      d="m16 11.78l4.24-7.33l1.73 1l-5.23 9.05l-6.51-3.75L5.46 19H22v2H2V3h2v14.54L9.5 8z" />
+                  </svg>
+                  Periode
+                </a>
+              </li>
+              <!-- Menu Item Periode -->
+            </ul>
+          </div>
+          <!--Menu Grup Reports-->
     </nav>
     <!-- Sidebar Menu -->
 

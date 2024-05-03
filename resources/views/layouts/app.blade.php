@@ -12,9 +12,14 @@
   <link rel="preconnect" href="https://fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-  <!-- Scripts -->
+
   {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/idb/build/iife/index-min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js"></script>
 </head>
 
 <body class="font-sans antialiased" x-data="{ page: 'profile', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="darkMode = JSON.parse(localStorage.getItem('darkMode'));
@@ -51,5 +56,6 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
   </div>
 </body>
 <script defer src="{{ asset('js/bundle.js') }}"></script>
+@stack('js')
 
 </html>
