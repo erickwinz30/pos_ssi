@@ -159,61 +159,103 @@
     </div>
     <!-- modal receipt -->
 
-    <!-- modal end session -->
-    <div x-show="isShowModalEndSession"
+    <!-- modal qr -->
+    <div x-show="isShowModalQr"
       class="fixed w-full h-screen left-0 top-0 z-10 flex flex-wrap justify-center content-center p-24">
-      <div x-show="isShowModalEndSession" class="fixed glass w-full h-screen left-0 top-0 z-0"
-        x-on:click="closeModalEndSession()" x-transition:enter="transition ease-out duration-100"
-        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"></div>
-      <div x-show="isShowModalEndSession" class="w-96 rounded-3xl bg-white shadow-xl overflow-hidden z-10"
+      <div x-show="isShowModalQr" class="fixed glass w-full h-screen left-0 top-0 z-0" x-on:click="closeModalQr()"
+        x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
+      <div x-show="isShowModalQr" class="w-1/2 rounded-3xl bg-white shadow-xl overflow-hidden z-10"
         x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 transform scale-90"
         x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-100"
         x-transition:leave-start="opacity-100 transform scale-100"
         x-transition:leave-end="opacity-0 transform scale-90">
+        <div id="receipt-content" class="text-left w-full text-sm p-6 overflow-auto">
+          <div class="text-center">
+            <img src="{{ asset('img/receipt-logo.png') }}" alt="Tailwind POS" class="mb-3 w-8 h-8 inline-block">
+            <h2 class="text-xl font-semibold">Point of Sales</h2>
+            <p>Universitas Dinamika</p>
+          </div>
+          <div class="flex mt-4 text-xs">
+            <div class="flex-grow">No: <span x-text="receiptNo"></span></div>
+            <div x-text="receiptDate"></div>
+          </div>
+          <hr class="my-2">
+          <div class="flex justify-center">
+            <div id="qrcode">
+            </div>
+          </div>
+          <hr class="my-2">
 
+          <div class="flex font-semibold">
+            <div class="flex-grow">TOTAL</div>
+            <div x-text="priceFormat(getTotalPrice())"></div>
+          </div>
+        </div>
         <div class="p-4 w-full">
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700" for="payment-method">
-              Initial Cash
-            </label>
-            <input type="text"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value="Rp. {{ number_format($session->initial_cash, 0, ',', '.') }}" disabled>
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700" for="payment-method">
-              Cash In
-            </label>
-            <input type="text"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value="Rp. {{ number_format($session->cash_in, 0, ',', '.') }}" disabled>
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700" for="payment-method">
-              Ending Cash System
-            </label>
-            @php
-              $endingCashSytem = $session->initial_cash + $session->cash_in;
-            @endphp
-            <input type="text" name="ending_cash_system" id="ending_cash_system"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value="Rp. {{ number_format($endingCashSytem, 0, ',', '.') }}" disabled>
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700" for="payment-method">
-              Ending Cash Actual
-            </label>
-            <input type="text" name="ending_cash_actual" id="ending_cash_actual"
-              class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Masukkan kas aktual">
-          </div>
           <button class="bg-cyan-500 text-white text-lg px-4 py-3 rounded-2xl w-full focus:outline-none"
-            x-on:click="processEndSession()">End Session</button>
+            disabled>Waiting for payment...</button>
         </div>
       </div>
+
+      <!-- modal end session -->
+      <div x-show="isShowModalEndSession"
+        class="fixed w-full h-screen left-0 top-0 z-10 flex flex-wrap justify-center content-center p-24">
+        <div x-show="isShowModalEndSession" class="fixed glass w-full h-screen left-0 top-0 z-0"
+          x-on:click="closeModalEndSession()" x-transition:enter="transition ease-out duration-100"
+          x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"></div>
+        <div x-show="isShowModalEndSession" class="w-96 rounded-3xl bg-white shadow-xl overflow-hidden z-10"
+          x-transition:enter="transition ease-out duration-100"
+          x-transition:enter-start="opacity-0 transform scale-90"
+          x-transition:enter-end="opacity-100 transform scale-100"
+          x-transition:leave="transition ease-in duration-100"
+          x-transition:leave-start="opacity-100 transform scale-100"
+          x-transition:leave-end="opacity-0 transform scale-90">
+
+          <div class="p-4 w-full">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700" for="payment-method">
+                Initial Cash
+              </label>
+              <input type="text"
+                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                value="Rp. {{ number_format($session->initial_cash, 0, ',', '.') }}" disabled>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700" for="payment-method">
+                Cash In
+              </label>
+              <input type="text"
+                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                value="Rp. {{ number_format($session->cash_in, 0, ',', '.') }}" disabled>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700" for="payment-method">
+                Ending Cash System
+              </label>
+              @php
+                $endingCashSytem = $session->initial_cash + $session->cash_in;
+              @endphp
+              <input type="text" name="ending_cash_system" id="ending_cash_system"
+                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                value="Rp. {{ number_format($endingCashSytem, 0, ',', '.') }}" disabled>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700" for="payment-method">
+                Ending Cash Actual
+              </label>
+              <input type="text" name="ending_cash_actual" id="ending_cash_actual"
+                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Masukkan kas aktual">
+            </div>
+            <button class="bg-cyan-500 text-white text-lg px-4 py-3 rounded-2xl w-full focus:outline-none"
+              x-on:click="processEndSession()">End Session</button>
+          </div>
+        </div>
+      </div>
+      <!-- modal end session -->
     </div>
-    <!-- modal end session -->
-  </div>
 </x-pos-layout>

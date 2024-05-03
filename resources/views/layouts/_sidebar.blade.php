@@ -154,6 +154,21 @@
                 </a>
               </li>
               <!-- Menu Item Periode -->
+
+              <!-- Menu Item Product -->
+              <li>
+                <a class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                  href="{{ route('reports.product.index') }}"
+                  @click="selected = (selected === 'Product' ? '':'Product')"
+                  :class="{ 'bg-graydark dark:bg-meta-4': (selected === 'Product') && (page === 'Product') }">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                      d="m16 11.78l4.24-7.33l1.73 1l-5.23 9.05l-6.51-3.75L5.46 19H22v2H2V3h2v14.54L9.5 8z" />
+                  </svg>
+                  Product
+                </a>
+              </li>
+              <!-- Menu Item Product -->
             </ul>
           </div>
           <!--Menu Grup Reports-->

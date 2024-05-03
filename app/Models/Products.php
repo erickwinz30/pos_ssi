@@ -19,4 +19,8 @@ class Products extends Model implements HasMedia
         'price',
         'stock',
     ];
+
+    public function sellingDetails() {
+        return $this->hasMany(SellingDetail::class, 'product_id');
+    }
 }

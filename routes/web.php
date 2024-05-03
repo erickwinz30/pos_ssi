@@ -6,8 +6,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\PosSessionController;
+use App\Http\Controllers\Xendit\QrisController;
 use App\Http\Controllers\PointOfSalesController;
 use App\Http\Controllers\Reports\PeriodeController;
+use App\Http\Controllers\Reports\ProductController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,9 +32,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/point-of-sales/end-session', [PointOfSalesController::class, 'endSession']);
     Route::resource('/point-of-sales', PointOfSalesController::class)->except('store');
 
+    Route::resource('qris', QrisController::class)->only(['store', 'index']);
+
     Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
         Route::get('periode-pdf', [PeriodeController::class, 'downloadPdf'])->name('reports.period.pdf');
         Route::resource('periode', PeriodeController::class)->only(['index']);
+
+        Route::get('product-pdf', [ProductController::class, 'downloadPdf'])->name('reports.product.pdf');
+        Route::resource('product', ProductController::class)->only(['index']);
     });
 });
 

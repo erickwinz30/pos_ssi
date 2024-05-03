@@ -37,6 +37,9 @@ function initApp() {
         change: 0,
         isShowModalReceipt: false,
         isShowModalEndSession: false,
+        isShowModalQr: false,
+        qr: null,
+        qr_id: null,
         receiptNo: null,
         receiptDate: null,
         async initDatabase() {
@@ -221,34 +224,123 @@ function initApp() {
             const url = "/point-of-sales" + "?" + params.toString();
             window.location.href = url;
         },
-        printAndProceed() {
+        async cekQrisPayment() {
+            try {
+                const qr_id = this.qr_id;
+                const csrfToken = document.head.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content;
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        type: "GET",
+                        url: "/qris?qr_id=" + qr_id,
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken,
+                        },
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            resolve(data.data);
+                        },
+                        error: function (xhr, status, error) {
+                            reject(error);
+                        },
+                    });
+                });
+            } catch (error) {
+                return false;
+            }
+        },
+        async cekQrisPaid(
+            session_id,
+            total_amount,
+            pay_amount,
+            changes,
+            payment_method
+        ) {
+            let response = true;
+
+            if (this.isShowModalQr) {
+                response = await this.cekQrisPayment();
+            } else {
+                return;
+            }
+
+            if (!response) {
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+                await this.cekQrisPaid(
+                    session_id,
+                    total_amount,
+                    pay_amount,
+                    changes,
+                    payment_method
+                );
+            } else {
+                const csrfToken = document.head.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content;
+
+                const formData = new FormData();
+                formData.append("session_id", session_id);
+                formData.append("total_amount", total_amount);
+                formData.append("pay_amount", pay_amount);
+                formData.append("changes", changes);
+                formData.append("payment_method", payment_method);
+
+                this.cart.forEach((item, index) => {
+                    formData.append(
+                        `cart[${index}][productId]`,
+                        item.productId
+                    );
+                    formData.append(`cart[${index}][name]`, item.name);
+                    formData.append(`cart[${index}][price]`, item.price);
+                    formData.append(`cart[${index}][qty]`, item.qty);
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "/point-of-sales/store",
+                    data: formData,
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken,
+                    },
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        Swal.fire({
+                            title: "Payment QRIS Paid!",
+                            icon: "success",
+                            confirmButtonText: "Ok",
+                        }).then(() => {
+                            window.location.reload(true);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    },
+                });
+            }
+        },
+        generateQris(
+            session_id,
+            total_amount,
+            pay_amount,
+            changes,
+            payment_method
+        ) {
+            this.isShowModalReceipt = false;
             const csrfToken = document.head.querySelector(
                 'meta[name="csrf-token"]'
             ).content;
 
             const formData = new FormData();
-            formData.append(
-                "session_id",
-                document.getElementById("sesion_id").value
-            );
-            formData.append("total_amount", this.getTotalPrice());
-            formData.append("pay_amount", this.cash);
-            formData.append("changes", this.change);
-            formData.append(
-                "payment_method",
-                document.getElementById("payment_method").value
-            );
+            formData.append("amount", total_amount);
 
-            this.cart.forEach((item, index) => {
-                formData.append(`cart[${index}][productId]`, item.productId);
-                formData.append(`cart[${index}][name]`, item.name);
-                formData.append(`cart[${index}][price]`, item.price);
-                formData.append(`cart[${index}][qty]`, item.qty);
-            });
+            var self = this;
 
             $.ajax({
                 type: "POST",
-                url: "/point-of-sales/store",
+                url: "/qris",
                 data: formData,
                 headers: {
                     "X-CSRF-TOKEN": csrfToken,
@@ -256,18 +348,87 @@ function initApp() {
                 processData: false,
                 contentType: false,
                 success: function (data) {
-                    Swal.fire({
-                        title: "Selling Success!",
-                        icon: "success",
-                        confirmButtonText: "Ok",
-                    }).then(() => {
-                        window.location.reload(true);
-                    });
+                    self.qr = data.data.qr_string;
+                    self.qr_id = data.data.id;
+
+                    self.isShowModalQr = true;
+
+                    new QRCode(document.getElementById("qrcode"), self.qr);
+
+                    self.cekQrisPaid(
+                        session_id,
+                        total_amount,
+                        pay_amount,
+                        changes,
+                        payment_method
+                    );
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
                 },
             });
+        },
+        printAndProceed() {
+            const payment_method =
+                document.getElementById("payment_method").value;
+            const session_id = document.getElementById("sesion_id").value;
+            const total_amount = this.getTotalPrice();
+            const pay_amount = this.cash;
+            const changes = this.change;
+
+            if (payment_method === "Non Tunai") {
+                this.generateQris(
+                    session_id,
+                    total_amount,
+                    total_amount,
+                    0,
+                    payment_method
+                );
+            } else {
+                const csrfToken = document.head.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content;
+
+                const formData = new FormData();
+                formData.append("session_id", session_id);
+                formData.append("total_amount", total_amount);
+                formData.append("pay_amount", pay_amount);
+                formData.append("changes", changes);
+                formData.append("payment_method", payment_method);
+
+                this.cart.forEach((item, index) => {
+                    formData.append(
+                        `cart[${index}][productId]`,
+                        item.productId
+                    );
+                    formData.append(`cart[${index}][name]`, item.name);
+                    formData.append(`cart[${index}][price]`, item.price);
+                    formData.append(`cart[${index}][qty]`, item.qty);
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "/point-of-sales/store",
+                    data: formData,
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken,
+                    },
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        Swal.fire({
+                            title: "Data Stored!",
+                            icon: "success",
+                            confirmButtonText: "Ok",
+                        }).then(() => {
+                            window.location.reload(true);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    },
+                });
+            }
         },
     };
 
